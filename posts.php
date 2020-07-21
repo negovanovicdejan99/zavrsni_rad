@@ -41,14 +41,14 @@
 ?>
 
 <?php
-$sql = "SELECT blog.title, blog.body, blog.author, blog.created_at FROM blog ORDER BY created_at DESC";
-$statement = $connection->prepare($sql);
+    $sql = "SELECT posts.title, posts.body, posts.author, posts.created_at, posts.id FROM posts ORDER BY created_at DESC";
+    $statement = $connection->prepare($sql);
 
-$statement->execute();
+    $statement->execute();
 
-$statement->setFetchMode(PDO::FETCH_ASSOC);
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
 
-$posts = $statement->fetchAll();
+    $posts = $statement->fetchAll();
 ?>
 
 <main role="main" class="container">
@@ -59,7 +59,7 @@ $posts = $statement->fetchAll();
         <?php foreach   ($posts as $post)  { ?>
             <div class="blog-post">
 
-                <h2 class="blog-post-title"><a href=""><?php echo($post['title']); ?></a></h2>
+                <h2 class="blog-post-title"><a href="single-post.php?post_id=<?php echo($post['id']) ?>"><?php echo($post['title']); ?></a></h2>
                 <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['author']); ?></a></p>
 
                <p><?php echo($post['body']); ?></p>

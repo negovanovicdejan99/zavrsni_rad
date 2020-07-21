@@ -1,3 +1,18 @@
+<?php
+    $servername = "127.0.0.1";
+    $username = "root";
+    $password = "vivify";
+    $dbname = "blog";
+
+    try {
+        $connection = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+    catch(PDOException $e)
+    {
+        echo $e->getMessage();
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,13 +33,52 @@
 <?php 
     include 'header.php';
 ?>
+
+<?php
+    $sql = "SELECT posts.title, posts.body, posts.author, posts.created_at, posts.id FROM posts WHERE posts.id = :postId";
+    $statement = $connection->prepare($sql);
+    $statement->bindParam(':postId', $_GET['post_id']);
+
+    $statement->execute();
+
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+
+    $post = $statement->fetch();
+
+    $sql = "SELECT comments.author, comments.text, comments.post_id FROM comments  WHERE comments.post_id = :postId";
+    $statement = $connection->prepare($sql);
+    $statement->bindParam(':postId', $_GET['post_id']);
+
+    $statement->execute();
+
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+
+    $comments = $statement->fetchAll();
+?>
+<main role="main" class="container">
 <div class="row">
     <div class="col-sm-8 blog-main">
-        <h1> Single Post </h1>
+        <div class="blog-post">
+            <h2 class="blog-post-title"><a href=""><?php echo($post['title']); ?></a></h2>
+            <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['author']); ?></a></p>
+            <p><?php echo($post['body']); ?></p>
+        </div>
+        <h3>Comments</h3>
+        <ul>
+            <?php foreach($comments as $comment){?>
+                <li>
+                <p>by <?php echo($comment['author']); ?></p>
+                <p><?php echo($comment['text']); ?></p>
+                </li>
+                <hr>
+            <?php }?>
+        </ul>
     </div>
+    
     <?php 
         include 'sidebar.php';
     ?> 
+</div>
 </div>
 <?php 
     include 'footer.php';
