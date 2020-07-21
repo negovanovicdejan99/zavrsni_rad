@@ -55,6 +55,21 @@
 
     $comments = $statement->fetchAll();
 ?>
+
+<script>
+            function hideComments(c) {
+                if(c === 'hide') {
+                    document.querySelectorAll('.comments')[0].classList.add('invisible');
+                    document.getElementById("sH-btn").value="show";
+                    document.getElementById("sH-btn").innerHTML="Show comments";
+                }
+                else if (c === 'show') {
+                    document.querySelectorAll('.comments')[0].classList.remove('invisible');
+                    document.getElementById("sH-btn").value="hide";
+                    document.getElementById("sH-btn").innerHTML="hide comments";
+                }
+            }
+    </script>
 <main role="main" class="container">
 <div class="row">
     <div class="col-sm-8 blog-main">
@@ -63,16 +78,7 @@
             <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['author']); ?></a></p>
             <p><?php echo($post['body']); ?></p>
         </div>
-        <h3>Comments</h3>
-        <ul>
-            <?php foreach($comments as $comment){?>
-                <li>
-                <p>by <?php echo($comment['author']); ?></p>
-                <p><?php echo($comment['text']); ?></p>
-                </li>
-                <hr>
-            <?php }?>
-        </ul>
+        <?php include 'comments.php' ?>
     </div>
     
     <?php 

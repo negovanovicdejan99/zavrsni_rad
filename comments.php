@@ -15,19 +15,26 @@
     <link href="styles/styles.css" rel="stylesheet">
 </head>
 <body>
-<?php 
-    include 'header.php';
-?>
+
 <div class="row">
     <div class="col-sm-8 blog-main">
-        <h1> Comments </h1>
+        <h3> Comments </h3>
+        <button value="hide" id='sH-btn' class="btn btn-default" onclick="hideComments(this.value)">Hide Comments</button>
+        
+        <div class="comments">
+            <ul>
+                <?php foreach($comments as $comment){?>
+                    <li>
+                        <p>by <?php echo($comment['author']); ?></p>
+                        <p><?php echo($comment['text']); ?></p>
+                    </li>
+                    <hr>
+                <?php }?>
+            </ul>
+        </div>
     </div>
-    <?php 
-        include 'sidebar.php';
-    ?> 
+     
 </div>
-<?php 
-    include 'footer.php';
-?>
+
 </body>
 </html>
