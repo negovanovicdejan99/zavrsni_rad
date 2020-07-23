@@ -28,6 +28,11 @@
                         <p>by <?php echo($comment['author']); ?></p>
                         <p><?php echo($comment['text']); ?></p>
                     </li>
+                    <form method="get">
+                    <input type="hidden" name="post_id" value="<?php echo($post['id']); ?>" />
+                    <input type="hidden" name="comment_id" value="<?php echo($comment['id']); ?>" />
+                    <button type="submit" >Delete</button>
+                    </form>
                     <hr>
                 <?php }?>
             </ul>
