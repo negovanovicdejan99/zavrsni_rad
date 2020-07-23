@@ -15,34 +15,37 @@
     <link href="styles/styles.css" rel="stylesheet">
 </head>
 <body>
-<?php 
+  <?php 
     include 'header.php';
-?>  
-<div class="row">
-<div class="col-sm-8 blog-main">
-<table style="width:100%">
-  <tr>
-    <th>Name</th>
-    <th>Options</th>
-  </tr>
-  <tr>
-    <td>Post title</td>
-    <td>Edit Delete</td>
-  </tr>
-  <tr>
-    <td>Post title</td>
-    <td>Edit Delete</td>
-  </tr>
-</table>
+  ?>  
+
+    <table style="width:100%">
+      <tr>
+        <th>Name</th>
+        <th>Options</th>
+      </tr>
+      <tr>
+        <td>Post title</td>
+        <td>Edit Delete</td>
+      </tr>
+      <tr>
+        <td>Post title</td>
+        <td>Edit Delete</td>
+      </tr>
+  </table>
 
  
     <h1> Add new post </h1>
-    <form action="" method="post">
-    Post title <input type="text" name="title"><br>
-    Post content <textarea rows="5" cols="40" name="content"></textarea><br>
+    <form action="posts.php" method="post">
+    Post title 
+    <br><input type="text" name="title"><br>
+    Post content: 
+    <br><textarea rows="5" cols="40" name="content"></textarea><br>
+    Author:
+     <br><input type="text" name="author"><br>
     <button type="submit">Save</button>
 </form>
-</div>
+    </div>
     <?php 
         include 'sidebar.php';
     ?>

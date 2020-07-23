@@ -50,6 +50,25 @@
 
     $posts = $statement->fetchAll();
 ?>
+<?php 
+if (!empty($_POST['author'])){
+        $author_post = $_POST['author'];
+        $title_post = $_POST['title'];
+        $content_post = $_POST['content'];
+        $sqlPost = "INSERT INTO posts (author, title, body) VALUES (:author, :title, :body)";
+        try {
+            $statement = $connection->prepare($sqlPost);
+            $statement->bindParam(':author', $author_post);
+            $statement->bindParam(':title', $title_post);
+            $statement->bindParam(':body', $content_post);
+            $statement->execute();
+            header("Location: posts.php");
+        }
+        catch(PDOException $e) {
+            echo $e->getMessage();
+    }
+}
+?>
 
 <main role="main" class="container">
 

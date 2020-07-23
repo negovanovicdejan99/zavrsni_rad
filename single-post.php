@@ -83,6 +83,27 @@
     }
 
 ?>
+<?php 
+if (!empty($_POST['del_post'])) {
+    $postId = $_GET['post_id'];
+        $postId = $_GET['post_id'];
+        $message;
+        var person = prompt("Do you really want to delete this post?", "Yes");;
+        $sqlDelComments = "DELETE FROM comments WHERE comments.post_id = :postId";
+        $sqlDelPost = "DELETE FROM posts WHERE posts.id = :postId";
+        try {
+            $statement = $connection->prepare($sqlDelPost);
+            $statement->bindParam(':postId', $postId);
+            $statement->execute();
+        }
+
+        catch(PDOException $e) {
+            echo $e->getMessage();
+        }   
+    header("Location: posts.php");
+
+}
+?>
     <script>
         function hideComments(c) {
             if(c === 'hide') {
@@ -111,7 +132,14 @@
             <p><?php echo($post['body']); ?></p>
         </div>
         <div>
-            
+        <form method="POST">
+            <input type="hidden" name="post_id" value="<?php echo($post['id']); ?>" />
+            <input type="hidden" name="del_post" value="1" />
+            <button type="submit" class="btn btn-primary" value="delete-post">Delete Post</button>
+                    </form>
+        </div>
+        <div>
+        <h3> Comments </h3>
             <form name="create-comment" action="create-comment.php" onsubmit="return validateForm()" method="POST">
                 Author: <input type="text" name="author_comment">
                 <br><br>
@@ -120,7 +148,7 @@
                 <input type="hidden" name="post_id" value="<?php echo($post['id']); ?>" />
 
                 <button type="submit" value="submit">Submit</button>
-            </form>
+            </form><br>
             
         </div>
         <?php include 'comments.php' ?>
