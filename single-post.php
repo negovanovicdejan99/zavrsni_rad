@@ -1,18 +1,3 @@
-<?php
-    $servername = "127.0.0.1";
-    $username = "root";
-    $password = "vivify";
-    $dbname = "blog";
-
-    try {
-        $connection = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    }
-    catch(PDOException $e)
-    {
-        echo $e->getMessage();
-    }
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,89 +6,91 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Single post</title>
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-
-    <!-- Custom styles for this template -->
-    <link href="styles/blog.css" rel="stylesheet">
-
-    <link href="styles/styles.css" rel="stylesheet">
 </head>
 <body>
-<?php 
-    include 'header.php';
-?>
- <script>
-        function validateForm() {
+
+    <?php 
+        include 'header.php';
+    ?>
+
+    <!-- Validate Comment -->
+    <script>
+        function validateFormComment() {
             var x = document.forms["create-comment"]["author_comment"].value;
             var y = document.forms["create-comment"]["text_comment"].value;
             if (x == "" || y == "") {
-             alert('Author name or text is empty');   
+            alert('Author name or text is empty');   
             }
-            }
+        }
     </script>
-<?php
-    $sql = "SELECT posts.title, posts.body, posts.author, posts.created_at, posts.id FROM posts WHERE posts.id = :postId";
-    $statement = $connection->prepare($sql);
-    $statement->bindParam(':postId', $_GET['post_id']);
 
-    $statement->execute();
+    <!-- Base -->
+    <?php
+        $sql = "SELECT posts.title, posts.body, posts.author, posts.created_at, posts.id FROM posts WHERE posts.id = :postId";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':postId', $_GET['post_id']);
 
-    $statement->setFetchMode(PDO::FETCH_ASSOC);
+        $statement->execute();
 
-    $post = $statement->fetch();
+        $statement->setFetchMode(PDO::FETCH_ASSOC);
 
-    $sql = "SELECT comments.author, comments.text, comments.post_id, comments.id FROM comments  WHERE comments.post_id = :postId";
-    $statement = $connection->prepare($sql);
-    $statement->bindParam(':postId', $_GET['post_id']);
+        $post = $statement->fetch();
 
-    $statement->execute();
+        $sql = "SELECT comments.author, comments.text, comments.post_id, comments.id FROM comments  WHERE comments.post_id = :postId";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':postId', $_GET['post_id']);
 
-    $statement->setFetchMode(PDO::FETCH_ASSOC);
+        $statement->execute();
 
-    $comments = $statement->fetchAll();
-?>
-<?php 
-    if (!empty($_GET['comment_id'])) {
-        $commentId = $_GET['comment_id'];
-        $postId = $_GET['post_id'];
+        $statement->setFetchMode(PDO::FETCH_ASSOC);
+
+        $comments = $statement->fetchAll();
+    ?>
+
+    <!-- Delete comment -->
+    <?php 
+        if (!empty($_POST['del_comment'])) {
+            $commentId = $_GET['comment_id'];
+            $postId = $_GET['post_id'];
         
-        $sqlDelCom = "DELETE FROM comments WHERE comments.id = :commId";
-        try {
-            $statement = $connection->prepare($sqlDelCom);
-            $statement->bindParam(':commId', $commentId);
-            $statement->execute();
-            header("Location: http://localhost:8080/single-post.php?post_id=$postId");
+            $sqlDelCom = "DELETE FROM comments WHERE comments.id = :commId";
+            try {
+                $statement = $connection->prepare($sqlDelCom);
+                $statement->bindParam(':commId', $commentId);
+                $statement->execute();
+                header("Location: single-post.php?post_id=$post_id");
 
-        }
-        catch(PDOException $e) {
-            echo $e->getMessage();
-    }
-
-    }
-
-?>
-<?php 
-if (!empty($_POST['del_post'])) {
-    $postId = $_GET['post_id'];
-        $postId = $_GET['post_id'];
-        $message;
-        var person = prompt("Do you really want to delete this post?", "Yes");;
-        $sqlDelComments = "DELETE FROM comments WHERE comments.post_id = :postId";
-        $sqlDelPost = "DELETE FROM posts WHERE posts.id = :postId";
-        try {
-            $statement = $connection->prepare($sqlDelPost);
-            $statement->bindParam(':postId', $postId);
-            $statement->execute();
+            }
+            catch(PDOException $e) {
+                echo $e->getMessage();
+            }
         }
 
-        catch(PDOException $e) {
-            echo $e->getMessage();
-        }   
-    header("Location: posts.php");
+    ?>
 
-}
-?>
+    <!-- Delete Post -->
+    <?php 
+        if (!empty($_POST['del_post'])) {
+            $del_postId = $_POST['post_id'];
+            // echo($del_postId);
+            $sqlDelComments = "DELETE FROM comments WHERE comments.post_id = :postId";
+            $sqlDelPost = "DELETE FROM posts WHERE posts.id = :postId";
+            try {
+                $statement = $connection->prepare($sqlDelComments);
+                $statement->bindParam(':postId', $del_postId);
+                $statement->execute();
+                $statement = $connection->prepare($sqlDelPost);
+                $statement->bindParam(':postId', $del_postId);
+                $statement->execute();
+            }
+            catch(PDOException $e) {
+                echo $e->getMessage();
+            } 
+            header("Location: posts.php");
+        }
+    ?>
+
+    <!-- Hidde Comment -->
     <script>
         function hideComments(c) {
             if(c === 'hide') {
@@ -118,49 +105,42 @@ if (!empty($_POST['del_post'])) {
                 }
             }
     </script>
-    <?php 
-    function deleteBtn(){
-        echo('radi');
-     }
-    ?>
-<main role="main" class="container">
-<div class="row">
-    <div class="col-sm-8 blog-main">
-        <div class="blog-post">
-            <h2 class="blog-post-title"><a href=""><?php echo($post['title']); ?></a></h2>
-            <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['author']); ?></a></p>
-            <p><?php echo($post['body']); ?></p>
-        </div>
-        <div>
-        <form method="POST">
-            <input type="hidden" name="post_id" value="<?php echo($post['id']); ?>" />
-            <input type="hidden" name="del_post" value="1" />
-            <button type="submit" class="btn btn-primary" value="delete-post">Delete Post</button>
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-sm-8 blog-main">
+                <div class="blog-post">
+                    <h2 class="blog-post-title"><a href=""><?php echo($post['title']); ?></a></h2>
+                    <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['author']); ?></a></p>
+                    <p><?php echo($post['body']); ?></p>
+                </div>
+                <div>
+                    <form method="POST" onsubmit="return confirm('Do you really want to delete this post?')">
+                        <input type="hidden" name="post_id" value="<?php echo($post['id']); ?>" />
+                        <input type="hidden" name="del_post" value="1" />
+                        <button type="submit" class="btn btn-primary" value="delete-post" id="delete">Delete Post</button>
                     </form>
+                </div>
+                <div>
+                    <h3> Comments </h3>
+                    <form onsubmit="validateFormComment()" name="create-comment" action="create-comment.php" method="POST">
+                        Author: <br><input type="text" name="author_comment">
+                        <br>
+                        Text: <br><input type="text" name="text_comment">
+                        <br>
+                        <input type="hidden" name="post_id" value="<?php echo($post['id']); ?>" />
+                        <br>
+                        <button type="submit" value="submit">Submit</button>
+                    </form><br>
+                </div>
+                <?php include 'comments.php' ?>
+            </div>
+            <?php 
+                include 'sidebar.php';
+            ?> 
         </div>
-        <div>
-        <h3> Comments </h3>
-            <form name="create-comment" action="create-comment.php" onsubmit="return validateForm()" method="POST">
-                Author: <input type="text" name="author_comment">
-                <br><br>
-                Text: <input type="text" name="text_comment">
-                <br><br>
-                <input type="hidden" name="post_id" value="<?php echo($post['id']); ?>" />
-
-                <button type="submit" value="submit">Submit</button>
-            </form><br>
-            
-        </div>
-        <?php include 'comments.php' ?>
-    </div>
-    
+    </main>
     <?php 
-        include 'sidebar.php';
-    ?> 
-</div>
-</div>
-<?php 
-    include 'footer.php';
-?>
+        include 'footer.php';
+    ?>
 </body>
 </html>

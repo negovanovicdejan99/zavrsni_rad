@@ -5,53 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Create post</title>
-
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-
-    <!-- Custom styles for this template -->
-    <link href="styles/blog.css" rel="stylesheet">
-
-    <link href="styles/styles.css" rel="stylesheet">
 </head>
 <body>
-  <?php 
-    include 'header.php';
-  ?>  
-
-    <table style="width:100%">
-      <tr>
-        <th>Name</th>
-        <th>Options</th>
-      </tr>
-      <tr>
-        <td>Post title</td>
-        <td>Edit Delete</td>
-      </tr>
-      <tr>
-        <td>Post title</td>
-        <td>Edit Delete</td>
-      </tr>
-  </table>
-
- 
-    <h1> Add new post </h1>
-    <form action="posts.php" method="post">
-    Post title 
-    <br><input type="text" name="title"><br>
-    Post content: 
-    <br><textarea rows="5" cols="40" name="content"></textarea><br>
-    Author:
-     <br><input type="text" name="author"><br>
-    <button type="submit">Save</button>
-</form>
-    </div>
     <?php 
-        include 'sidebar.php';
+        include 'header.php';
+    ?> 
+
+    <!-- Post Validation -->
+    <script>
+        function validateFormPost() {
+            var x = document.forms["create-post"]["title"].value;
+            var y = document.forms["create-post"]["content"].value;
+            var z = document.forms["create-post"]["author"].value;
+            if (x == "" || y == "" || z == "") {
+                alert('Author name or title or text is empty');  
+            }
+        }
+    </script> 
+
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-sm-8 blog-main">
+                <table style="width:100%">
+                    <tr>
+                        <th>Name</th>
+                        <th>Options</th>
+                    </tr>
+                    <tr>
+                        <td>Post title</td>
+                        <td>Edit Delete</td>
+                    </tr>
+                    <tr>
+                        <td>Post title</td>
+                        <td>Edit Delete</td>
+                    </tr>
+                </table>
+                <h1> Add new post </h1>
+                <form name="create-post" action="posts.php" method="post" onsubmit="return validateFormPost()">
+                    Post title: 
+                    <br><input type="text" name="title"><br>
+                    Post content: 
+                    <br><textarea rows="5" cols="40" name="content"></textarea><br>
+                    Author:
+                    <br><input type="text" name="author"><br><br>
+                    <button type="submit">Save</button>
+                </form>
+            </div>  
+            <?php 
+                include 'sidebar.php';
+            ?>
+        </div>
+    </main>
+    <?php 
+      include 'footer.php';
     ?>
-    </div>
-<?php 
-    include 'footer.php';
-?>
 </body>
 </html>

@@ -1,19 +1,3 @@
-<?php
-    $servername = "127.0.0.1";
-    $username = "root";
-    $password = "vivify";
-    $dbname = "blog";
-
-    try {
-        $connection = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    }
-    catch(PDOException $e)
-    {
-        echo $e->getMessage();
-    }
-?>
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -26,80 +10,66 @@
 
     <title>Vivify Blog</title>
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-
-    <!-- Custom styles for this template -->
-    <link href="styles/blog.css" rel="stylesheet">
-
-    <link href="styles/styles.css" rel="stylesheet">
 </head>
 
 <body>
-<?php 
-    include 'header.php';
-?>
+    <?php 
+        include 'header.php';
+    ?>
+    <!-- Baza -->
+    <?php
+        $sql = "SELECT posts.title, posts.body, posts.author, posts.created_at, posts.id FROM posts ORDER BY created_at DESC";
+        $statement = $connection->prepare($sql);
 
-<?php
-    $sql = "SELECT posts.title, posts.body, posts.author, posts.created_at, posts.id FROM posts ORDER BY created_at DESC";
-    $statement = $connection->prepare($sql);
+        $statement->execute();
 
-    $statement->execute();
+        $statement->setFetchMode(PDO::FETCH_ASSOC);
 
-    $statement->setFetchMode(PDO::FETCH_ASSOC);
+        $posts = $statement->fetchAll();
+    ?>
+    <?php 
+        if (!empty($_POST['author'])){
+            $author_post = $_POST['author'];
+            $title_post = $_POST['title'];
+            $content_post = $_POST['content'];
+            $sqlPost = "INSERT INTO posts (author, title, body) VALUES (:author, :title, :body)";
 
-    $posts = $statement->fetchAll();
-?>
-<?php 
-if (!empty($_POST['author'])){
-        $author_post = $_POST['author'];
-        $title_post = $_POST['title'];
-        $content_post = $_POST['content'];
-        $sqlPost = "INSERT INTO posts (author, title, body) VALUES (:author, :title, :body)";
-        try {
-            $statement = $connection->prepare($sqlPost);
-            $statement->bindParam(':author', $author_post);
-            $statement->bindParam(':title', $title_post);
-            $statement->bindParam(':body', $content_post);
-            $statement->execute();
-            header("Location: posts.php");
+            try {
+                $statement = $connection->prepare($sqlPost);
+                $statement->bindParam(':author', $author_post);
+                $statement->bindParam(':title', $title_post);
+                $statement->bindParam(':body', $content_post);
+                $statement->execute();
+                header("Location: posts.php");
+            }
+            catch(PDOException $e) {
+                echo $e->getMessage();
+            }
         }
-        catch(PDOException $e) {
-            echo $e->getMessage();
-    }
-}
-?>
+    ?>
 
-<main role="main" class="container">
-
-    <div class="row">
-
-        <div class="col-sm-8 blog-main">
-        <?php foreach   ($posts as $post)  { ?>
-            <div class="blog-post">
-
-                <h2 class="blog-post-title"><a href="single-post.php?post_id=<?php echo($post['id']) ?>"><?php echo($post['title']); ?></a></h2>
-                <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['author']); ?></a></p>
-
-               <p><?php echo($post['body']); ?></p>
-            </div><!-- /.blog-post -->
-        <?php }?>
-
-            <nav class="blog-pagination">
-                <a class="btn btn-outline-primary" href="#">Older</a>
-                <a class="btn btn-outline-secondary disabled" href="#">Newer</a>
-            </nav>
-
-        </div><!-- /.blog-main -->
-        <?php 
-            include 'sidebar.php';
-        ?>
-    </div><!-- /.row -->
-</main><!-- /.container -->
-
-<?php 
-    include 'footer.php';
-?>
-
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-sm-8 blog-main">
+                <?php foreach   ($posts as $post)  { ?>
+                    <div class="blog-post">
+                        <h2 class="blog-post-title"><a href="single-post.php?post_id=<?php echo($post['id']) ?>"><?php echo($post['title']); ?></a></h2>
+                        <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['author']); ?></a></p>
+                        <p><?php echo($post['body']); ?></p>
+                    </div><!-- /.blog-post -->
+                <?php }?>
+                <nav class="blog-pagination">
+                    <a class="btn btn-outline-primary" href="#">Older</a>
+                    <a class="btn btn-outline-secondary disabled" href="#">Newer</a>
+                </nav>
+            </div><!-- /.blog-main -->
+            <?php 
+                include 'sidebar.php';
+            ?>
+        </div><!-- /.row -->
+    </main><!-- /.container -->
+    <?php 
+        include 'footer.php';
+    ?>
 </body>
 </html>
