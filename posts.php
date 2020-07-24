@@ -17,8 +17,48 @@
         include 'header.php';
     ?>
     <!-- Baza -->
+    <?php 
+        if (!empty($_POST['title'])){
+            $first_name_post = $_POST['firstName'];
+            $last_name_post = $_POST['lastName'];
+
+            $title_post = $_POST['title'];
+            $content_post = $_POST['content'];
+            
+            $sqlUser= "SELECT users.id, users.first_name, users.last_name FROM users WHERE first_name = '$first_name_post' AND last_name = '$last_name_post'";
+            try {
+                $statement = $connection->prepare($sqlUser);
+
+                $statement->execute();
+
+                $statement->setFetchMode(PDO::FETCH_ASSOC);
+
+                
+                $user = $statement->fetch();
+                print_r($user['id']);
+            }
+            catch(PDOException $e) {
+                echo $e->getMessage();
+            }
+            $sqlPost = "INSERT INTO posts (title, body, user_id) VALUES (:title, :body, :userId)";
+
+            try {
+                $statement = $connection->prepare($sqlPost);
+                $statement->bindParam(':title', $title_post);
+                $statement->bindParam(':body', $content_post);
+                $statement->bindParam(':userId', $user['id']);
+                $statement->execute();
+                // header("Location: posts.php");
+            }
+            catch(PDOException $e) {
+                echo $e->getMessage();
+            }
+        }
+    ?>
     <?php
-        $sql = "SELECT posts.title, posts.body, posts.author, posts.created_at, posts.id FROM posts ORDER BY created_at DESC";
+        $sql = "SELECT posts.title, posts.body, users.last_name, users.first_name, users.id, posts.created_at, posts.id FROM posts 
+        INNER JOIN users ON users.id = posts.user_id
+        ORDER BY created_at DESC";
         $statement = $connection->prepare($sql);
 
         $statement->execute();
@@ -27,26 +67,6 @@
 
         $posts = $statement->fetchAll();
     ?>
-    <?php 
-        if (!empty($_POST['author'])){
-            $author_post = $_POST['author'];
-            $title_post = $_POST['title'];
-            $content_post = $_POST['content'];
-            $sqlPost = "INSERT INTO posts (author, title, body) VALUES (:author, :title, :body)";
-
-            try {
-                $statement = $connection->prepare($sqlPost);
-                $statement->bindParam(':author', $author_post);
-                $statement->bindParam(':title', $title_post);
-                $statement->bindParam(':body', $content_post);
-                $statement->execute();
-                header("Location: posts.php");
-            }
-            catch(PDOException $e) {
-                echo $e->getMessage();
-            }
-        }
-    ?>
 
     <main role="main" class="container">
         <div class="row">
@@ -54,7 +74,7 @@
                 <?php foreach   ($posts as $post)  { ?>
                     <div class="blog-post">
                         <h2 class="blog-post-title"><a href="single-post.php?post_id=<?php echo($post['id']) ?>"><?php echo($post['title']); ?></a></h2>
-                        <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['author']); ?></a></p>
+                        <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['first_name']); ?> <?php echo($post['last_name']); ?></a></p>
                         <p><?php echo($post['body']); ?></p>
                     </div><!-- /.blog-post -->
                 <?php }?>

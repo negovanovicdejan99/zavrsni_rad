@@ -16,8 +16,9 @@
         function validateFormPost() {
             var x = document.forms["create-post"]["title"].value;
             var y = document.forms["create-post"]["content"].value;
-            var z = document.forms["create-post"]["author"].value;
-            if (x == "" || y == "" || z == "") {
+            var z = document.forms["create-post"]["firstName"].value;
+            var d = document.forms["create-post"]["lastName"].value;
+            if (x == "" || y == "" || z == "" || d == "") {
                 alert('Author name or title or text is empty');  
             }
         }
@@ -46,8 +47,10 @@
                     <br><input type="text" name="title"><br>
                     Post content: 
                     <br><textarea rows="5" cols="40" name="content"></textarea><br>
-                    Author:
-                    <br><input type="text" name="author"><br><br>
+                    First Name:
+                    <br><input type="text" name="firstName"><br><br>
+                    Last Name:
+                    <br><input type="text" name="lastName"><br><br>
                     <button type="submit">Save</button>
                 </form>
             </div>  

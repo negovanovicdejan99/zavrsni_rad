@@ -26,7 +26,9 @@
 
     <!-- Base -->
     <?php
-        $sql = "SELECT posts.title, posts.body, posts.author, posts.created_at, posts.id FROM posts WHERE posts.id = :postId";
+        $sql = "SELECT posts.title, posts.body, users.last_name, users.first_name, users.id, posts.created_at, posts.id FROM posts 
+        INNER JOIN users ON users.id = posts.user_id
+        WHERE posts.id = :postId";
         $statement = $connection->prepare($sql);
         $statement->bindParam(':postId', $_GET['post_id']);
 
@@ -35,7 +37,9 @@
         $statement->setFetchMode(PDO::FETCH_ASSOC);
 
         $post = $statement->fetch();
+    ?>
 
+    <?php 
         $sql = "SELECT comments.author, comments.text, comments.post_id, comments.id FROM comments  WHERE comments.post_id = :postId";
         $statement = $connection->prepare($sql);
         $statement->bindParam(':postId', $_GET['post_id']);
@@ -110,7 +114,7 @@
             <div class="col-sm-8 blog-main">
                 <div class="blog-post">
                     <h2 class="blog-post-title"><a href=""><?php echo($post['title']); ?></a></h2>
-                    <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['author']); ?></a></p>
+                    <p class="blog-post-meta"><?php echo($post['created_at']); ?> by <a href="#"><?php echo($post['first_name']); ?> <?php echo($post['last_name']); ?></a></p>
                     <p><?php echo($post['body']); ?></p>
                 </div>
                 <div>
